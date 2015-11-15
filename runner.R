@@ -1,5 +1,5 @@
-setwd("F:\\Documents\\Data Science Capstone v2")
-setwd("/Users/fredrikemilsson/Documents/Data Science Capstone v2")
+setwd("F:\\Documents\\Data-Science-Capstone")
+setwd("/Users/fredrikemilsson/Documents/Data-Science-Capstone")
 
 rm(list=ls()) #will remove ALL objects 
 
