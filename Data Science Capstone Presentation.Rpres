@@ -1,0 +1,72 @@
+Where should I eat tonight?
+========================================================
+author: Fredrik Emilsson
+date: 2015-11-22
+
+- I want to answer the following question: I am in a specific location and wants to know which restaurant within a specified distance I should visit for my dinner
+- To make this possible I first need to predict what a user thinks about a given restaurant. 
+- Yelp are delivering the data
+
+Understand which type of restaurant a user likes
+========================================================
+
+- If a user gives a restaurant a higher star than the average user, he or she probably likes this kind of restaurants
+- Other similar restaurants with same types also probably get a higher star than average
+- A similar process is done when a user dislikes a restaurant
+- Use the categories and attributes to map user and restaurant  
+- Will improve the prediction of review stars for restaurants
+
+Prediction model
+========================================================
+
+- Using the normal fitting linear model
+- Features I used to predict the review star was the users' star average, the restaurant star average and the aggregated data I mentioned above regarding categories and attributes
+- Totally 99 categories and 101 attributes were used as a part of the final model
+
+The result
+========================================================
+
+The residual standard error was 0.5456806 and 73% of the prediction matches. 
+
+```{r echo=FALSE, fig.width=16, fig.height=8, message=FALSE, warning=FALSE}
+library(ggplot2)
+train_data <- readRDS(file="train_data.rds")
+lm_res <- readRDS(file="lm_res.rds")   
+pred <- predict(lm_res)
+round_pred <- round(pred)
+diff <- round_pred-train_data$r_stars
+plotter <- data.frame(diff)
+ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") +
+  ggtitle("Histogram") + theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=32, hjust=0.5)) +
+  theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=22), axis.text= element_text(angle=0, vjust=0.5, size=16)) + scale_x_continuous(breaks = round(seq(-3, 3, by = 1),1)) 
+```
+
+Where should I eat tonight?
+========================================================
+
+If a person is in central Las Vegas which restaurant should he/she visit? It should be not more than 500 meters away? Here is my top 3 candidates:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(Rmisc)
+library(sqldf)
+library(aspace)
+
+source("functions.R")
+# estimate restaurant
+business <- readRDS(file="business_restaurants.rds")
+mean_stars <- readRDS(file="mean_stars.rds")
+business <- sqldf("select * from business, mean_stars where b_business_id=m_business_id")
+
+user_rank_mean <- readRDS(file="user_rank_mean.rds") 
+user <- readRDS(file="user_restaurants.rds") 
+user_join <- sqldf("select * from user, user_rank_mean where u_user_id=urm_user_id")
+
+lm_res <- readRDS(file="lm_res.rds")   
+```
+```{r echo=FALSE}
+lat <- 36.114647; lng <- -115.172813; max_dist <- 500
+user <- user_join[user_join$urm_user_id=="Kq8-FUG7d_MT2qRNiNBJnA",]
+res <- get_matching_companies(business, lat, lng, max_dist, user, lm_res)
+print(res[,1:2], row.names = FALSE)
+```
