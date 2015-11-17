@@ -175,7 +175,7 @@ test_data <- readRDS(file="test_data.rds")
 lm_res <- readRDS(file="lm_res.rds")   
 pred <- predict(lm_res, test_data)
 round_pred <- round(pred)
-diff <- round_pred-test_data
+diff <- round_pred-test_data$r_stars
 plotter <- data.frame(diff)
 ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") 
 ```
