@@ -30,11 +30,11 @@ The residual standard error was 0.5456806 and 73% of the prediction matches.
 
 ```{r echo=FALSE, fig.width=16, fig.height=8, message=FALSE, warning=FALSE}
 library(ggplot2)
-train_data <- readRDS(file="train_data.rds")
+test_data <- readRDS(file="test_data.rds")
 lm_res <- readRDS(file="lm_res.rds")   
 pred <- predict(lm_res)
 round_pred <- round(pred)
-diff <- round_pred-train_data$r_stars
+diff <- round_pred-test_data$r_stars
 plotter <- data.frame(diff)
 ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") +
   ggtitle("Histogram") + theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=32, hjust=0.5)) +

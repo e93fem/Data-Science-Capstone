@@ -10,7 +10,7 @@ library(Rmisc)
 library(sqldf)
 library(aspace)
 
-source("functions.R")
+source("F:\\Documents\\Data-Science-Capstone\\functions.R")
 ```
 
 # Introduction 
@@ -171,11 +171,11 @@ As you may see in the plot the more types the better. There is also no bigger di
 The result was rather good. I decided to use the case where we have 232 types. The residual standard error was 0.5456806 and 73% of the prediction matches. Here is a histogram that shows the diff between the prediction and the real number of starts for the test data.
 
 ```{r echo=FALSE, fig.width=8, fig.height=2, message=FALSE, warning=FALSE}
-train_data <- readRDS(file="val_data.rds")
+test_data <- readRDS(file="test_data.rds")
 lm_res <- readRDS(file="lm_res.rds")   
-pred <- predict(lm_res, train_data)
+pred <- predict(lm_res, test_data)
 round_pred <- round(pred)
-diff <- round_pred-train_data$r_stars
+diff <- round_pred-test_data
 plotter <- data.frame(diff)
 ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") 
 ```
@@ -212,4 +212,4 @@ Even if the result is rather good it is certainly possible to reduce the standar
 
 It was a very interesting capstone and even if there was not time enough to get deeply into the problem it gives a god start and give possibilities in improving the result. 
 
-If you are interested, just let me know and you will get all information you need to reproduce my results. 
+All the code may be found on my github: https://github.com/e93fem/Data-Science-Capstone. 
