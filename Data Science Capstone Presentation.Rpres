@@ -28,18 +28,14 @@ The result
 
 The residual standard error was 0.5456806 and 73% of the prediction matches. 
 
-```{r echo=FALSE, fig.width=16, fig.height=8, message=FALSE, warning=FALSE}
-library(ggplot2)
-test_data <- readRDS(file="test_data.rds")
-lm_res <- readRDS(file="lm_res.rds")   
-pred <- predict(lm_res)
-round_pred <- round(pred)
-diff <- round_pred-test_data$r_stars
-plotter <- data.frame(diff)
-ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") +
-  ggtitle("Histogram") + theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=32, hjust=0.5)) +
-  theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=22), axis.text= element_text(angle=0, vjust=0.5, size=16)) + scale_x_continuous(breaks = round(seq(-3, 3, by = 1),1)) 
+```{r fig.width=4, fig.height=4,echo=FALSE}
+library(png)
+library(grid)
+img <- readPNG("F:\\Documents\\Data-Science-Capstone\\histogram.png")
+grid.raster(img)
 ```
+
+after
 
 Where should I eat tonight?
 ========================================================
