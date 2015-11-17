@@ -31,9 +31,9 @@ A good library I used a lot during the capstone was **sqldf** that you will see 
 
 To get a more uniformed data format I decided to do some manipulation of the input data. Specially regarding the business dataset. To get rid of lists and deep name-values I changed both neighborhoods, categories and attributes to be normal name-value objects in the json file. Here are two examples:
 
-*"categories": ["Nightlife", "Belgian"] => "categories": { "Nightlife": 1, "Belgian": 1}*
+_"categories": ["Nightlife", "Belgian"] => "categories": { "Nightlife": 1, "Belgian": 1}_
 
-*"attributes": {"Outdoor Seating": false,"Price Range": 1} => "attributes": {"Outdoor Seating__false": 1, "Price Range__1": 1}}*
+_"attributes": {"Outdoor Seating": false,"Price Range": 1} => "attributes": {"Outdoor Seating false": 1, "Price Range 1": 1}}_
 
 It also simplifies the prediction if all interesting features are numbers, 1 if exists. 
 
@@ -83,7 +83,7 @@ If a user gives a restaurant a higher star than the average user, he or she prob
 
 Here is the steps I used to generate how good a user likes a type and then use it against restaurants:
 
-1.  Create a data frame that contains all types, the average star for the restaurant (b_stars), the number of starts the user gave on the review (r_stars) and the id of the user from the active data set (user_id). All NA related to a types are set to 0. 
+1.  Create a data frame that contains all types,average star for the restaurant (b_stars), number of starts the user gave on the review (r_stars) and id of the user from the active data set (user_id). All NA related to a types are set to 0. 
 ```{r echo=FALSE}
 restaurants_join <- readRDS(file="restaurants_join.rds")
 join_names <- names(restaurants_join)
@@ -177,7 +177,7 @@ pred <- predict(lm_res, test_data)
 round_pred <- round(pred)
 diff <- round_pred-test_data$r_stars
 plotter <- data.frame(diff)
-ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") 
+ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") + scale_x_continuous(breaks = round(seq(-3, 3, by = 1),1)) + ggtitle("Histogram")
 ```
 
 Here am I also going to answer my question: Where should I eat tonight? If a user is in central Las Vegas (latitude 36.114647 and longitude -115.172813) which restaurant should the user visit? It should be not more than 500 meters away. I compared two different users ("--_L4WuJxAfQkRtC1e43hg" and "Kq8-FUG7d_MT2qRNiNBJnA") and we see that there top 3 restaurants differs. There are only one in common. 
@@ -202,7 +202,7 @@ print(get_matching_companies(business, lat, lng, max_dist, user, lm_res), row.na
 user <- user_join[user_join$urm_user_id=="Kq8-FUG7d_MT2qRNiNBJnA",]
 print(get_matching_companies(business, lat, lng, max_dist, user, lm_res), row.names = FALSE)
 ```
-Especially the second user, Kq8-FUG7d_MT2qRNiNBJnA, has the restaurant Chipotle Mexican Grill in the top 3 even if its average stars are only 3.5.
+Especially the second user, Kq8-FUG7d_MT2qRNiNBJnA, has the restaurant Chipotle Mexican Grill in the top 3 even if its average stars is only 3.5.
 
 # Discussion   
 
