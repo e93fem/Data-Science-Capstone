@@ -62,7 +62,7 @@ user_join <- sqldf("select * from user, user_rank_mean where u_user_id=urm_user_
 
 lm_res <- readRDS(file="lm_res.rds")   
 ```
-```{r fig.width=12, fig.height=6, echo=TRUE}
+```{r fig.width=12, fig.height=6, echo=FALSE}
 lat <- 36.114647; lng <- -115.172813; max_dist <- 500
 user <- user_join[user_join$urm_user_id=="Kq8-FUG7d_MT2qRNiNBJnA",]
 res <- get_matching_companies(business, lat, lng, max_dist, user, lm_res)
