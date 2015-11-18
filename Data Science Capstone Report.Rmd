@@ -17,9 +17,9 @@ source("F:\\Documents\\Data-Science-Capstone\\functions.R")
 
 The goal for this Data Science Capstone was to create a question that are answerable based on the delivered data from Yelp. After that find out how it is possible to answer this question. 
 
-I decided to create a question that contains two steps. First I want to predict how many stars a person would give a specified restaurant. In a second step the usage of this prediction would answer the following question: I am in a specific location and wants to know which restaurant within a specified distance I should visit for my dinner.
+I decided to create a question that contains two steps. First I want to predict how many stars a user would give a specified restaurant. In a second step the usage of this prediction will answer the following question: I am in a specific location and wants to know which restaurant within a specified distance I should visit for my dinner.
 
-In this report I will describe the way I took to answer this question, which steps I needed to have to get the result and how good the answers to the questions are.
+In this report I will describe the way I took to answer those questions, which steps I needed to have to get the result and how good the answers to the questions are.
 
 # Methods and Data  
 
@@ -31,11 +31,11 @@ A good library I used a lot during the capstone was **sqldf** that you will see 
 
 To get a more uniformed data format I decided to do some manipulation of the input data. Specially regarding the business dataset. To get rid of lists and deep name-values I changed both neighborhoods, categories and attributes to be normal name-value objects in the json file. Here are two examples:
 
-_"categories": ["Nightlife", "Belgian"] => "categories": { "Nightlife": 1, "Belgian": 1}_
+_"categories": ["Nightlife", "Belgian"] => "categories": {"Nightlife": 1, "Belgian": 1}_
 
 _"attributes": {"Outdoor Seating": false,"Price Range": 1} => "attributes": {"Outdoor Seating false": 1, "Price Range 1": 1}}_
 
-It also simplifies the prediction if all interesting features are numbers, 1 if exists. 
+This also simplifies the prediction if all interesting features are numbers, 1 if exists. 
 
 This part did I do by a Scala object which uniformed the business.json-file.
 
@@ -48,9 +48,9 @@ There are five different datasets: **business**, **review**, **user**, **check-i
 -  **User** since it contains information about the users. Some of them are user_id and average_stars.
 -	**Review** since it combines the restaurants with their users. Some of them are business_id, user_id, stars and date.
 
-I decided to make a join between business, review and user as the base data set. It will also be filtered so only restaurants are included. This base data set is then derived to produce more interesting information as I will show below.
+I decided to make a join between business, review and user as the base data set. It was also filtered so only restaurants are included. This base data set is then derived to produce more interesting information as I will show in next chapter.
 
-To make the prediction to be as good as possible I calculate the real average stars for a business's instead of the one that was rounded to half-stars by using the review dataset. This was then joined with the base data set.
+To make the prediction to be as good as possible I calculate the real average stars for a business's, instead of the one that was rounded to half-stars, by using the review dataset. This was then joined with the base data set.
 
 The total dim of the join are 990627 rows and 603 columns.
 
@@ -81,9 +81,9 @@ Maybe the most important derivation of the data is to calculate which of the res
 
 If a user gives a restaurant a higher star than the average user, he or she probably likes this kind of restaurants and therefor will other similar restaurants with same types also probably get a higher star than average. A similar process is done when a user dislikes a restaurant. By using this knowledge (which you will see below) it will improve the prediction of review stars for restaurants.
 
-Here is the steps I used to generate how good a user likes a type and then use it against restaurants:
+Here are the steps I used to generate how good a user likes a type and then use it against restaurants:
 
-1.  Create a data frame that contains all types,average star for the restaurant (b_stars), number of starts the user gave on the review (r_stars) and id of the user from the active data set (user_id). All NA related to a types are set to 0. 
+1.  Create a data frame that contains all types, average star for the restaurant (b_stars), number of starts the user gave on the review (r_stars) and id of the user from the active data set (user_id). All NA related to a types are set to 0. 
 ```{r echo=FALSE}
 restaurants_join <- readRDS(file="restaurants_join.rds")
 join_names <- names(restaurants_join)
@@ -100,7 +100,7 @@ names(ranking) <- c("bstars","rstars","userid","type1","type2","businessid")
 print(ranking[c(34,13,4,32),], row.names = FALSE)
 ```
 
-2.	For each review get the difference between the review stars with the average stars for the restaurant (rstars - bstars) and multiply all the categories and attributes with this value. Then join this with userid:
+2.	For each review get the difference between the review stars with the average stars for the restaurant (rstars - bstars) and multiply all the types with this value. Then join this with userid:
 ```{r}
 user_data <- (ranking$rstars-ranking$bstars)*ranking[,4:(ncol(ranking)-1)]
 df <- data.frame(ranking[,3],user_data); names(df)[1] <- "userid"
@@ -132,13 +132,13 @@ print(restaurants_join_rank[c(1,17,35,36),c(1,6,7,8)], row.names = FALSE)
 
 ## Workflow 
 
-Here are all steps that are done to answer where I should eat tonight.
+Here are the steps that are done to be able to answer where I should eat tonight.
 
 1. Uniform the data. Done by a Scala object. 
 2. Import the data into R
 3. Create the join containing business, review, user and business average stars. Also filtering out the one that is not a restaurant.
 4. Use one of the types when there are many types that are highly correlated (higher or equal to 0.85).
-5. Estimate the types of restaurant a user likes and join it in the data set.
+5. Estimate the types of restaurant a user likes and dislikes and join it with the data set.
 6. Filter out the data that are of interest. In this case I filtered out reviews that was dated before 1 January 2014.
 7. Split the data into a training set, a validation set and a test set.
 8. Create the fitting linear model.
@@ -149,7 +149,7 @@ Here are all steps that are done to answer where I should eat tonight.
 
 After some minor investigations I decided to use the normal fitting linear model. Most of the features are either 0 or 1 or a number between 1 and 5 so it should be fitting good enough to use a linear model. 
 
-The features I used to predict the review star was the users' star average, the restaurant star average and the aggregated data I mentioned above regarding categories and attributes. Totally 99 categories and 101 attributes were used as a part of the final model.
+The features I used to predict the review star was the users' star average, the restaurant star average and the aggregated data I mentioned above regarding categories and attributes. Totally 106 categories and 126 attributes were used as a part of the final model.
 
 This is the result of comparing some alternatives regarding number of types:
 
@@ -168,7 +168,7 @@ As you may see in the plot the more types the better. There is also no bigger di
 
 # Results   
 
-The result was rather good. I decided to use the case where we have 232 types. The residual standard error was 0.5456806 and 73% of the prediction matches. Here is a histogram that shows the diff between the prediction and the real number of starts for the test data.
+The result was rather good. I decided to use the case where we have 232 types. The residual standard error was 0.5456806 and 73% of the predictions matches. Here is a histogram that shows the diff between the prediction and the real number of starts for the test data.
 
 ```{r echo=FALSE, fig.width=8, fig.height=2, message=FALSE, warning=FALSE}
 test_data <- readRDS(file="test_data.rds")
@@ -206,10 +206,10 @@ Especially the second user, Kq8-FUG7d_MT2qRNiNBJnA, has the restaurant Chipotle 
 
 # Discussion   
 
-I think the results are rather good. The prediction part is acceptable, the standard deviation is 0.5970290 and the hit percent is 69%. With such a good prediction the top ranked restaurant in the neighborhood will probably at least be one of the top three.
+I think the results are rather good. The prediction part is acceptable. With such a good prediction the top ranked restaurant in the neighborhood will probably at least be one of the top three.
 
 Even if the result is rather good it is certainly possible to reduce the standard deviation. Since the time for producing the result was rather short many things are not yet investigated. Things that may be of interest are the texts for the reviews and also maybe for the tips as well, also a user's friend's reviews may be of interest. I am also using a normal lm. Maybe some of the Caret training models could be of interest.
 
-It was a very interesting capstone and even if there was not time enough to get deeply into the problem it gives a god start and give possibilities in improving the result. 
+It was a very interesting capstone and even if there was not time enough to get deeply into the problem it gives a god start and there are possibilities in improving the result. 
 
 All the code may be found on my github: https://github.com/e93fem/Data-Science-Capstone. 

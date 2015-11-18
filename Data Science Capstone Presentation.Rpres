@@ -21,21 +21,23 @@ Prediction model
 
 - Using the normal fitting linear model
 - Features I used to predict the review star was the users' star average, the restaurant star average and the aggregated data I mentioned above regarding categories and attributes
-- Totally 99 categories and 101 attributes were used as a part of the final model
+- Totally 106 categories and 126 attributes were used as a part of the final model
 
 The result
 ========================================================
 
 The residual standard error was 0.5456806 and 73% of the prediction matches. 
 
-```{r fig.width=4, fig.height=4,echo=FALSE}
-library(png)
-library(grid)
-img <- readPNG("F:\\Documents\\Data-Science-Capstone\\histogram.png")
-grid.raster(img)
+```{r fig.width=12, fig.height=6,echo=FALSE}
+library(ggplot2)
+test_data <- readRDS(file="test_data.rds")
+lm_res <- readRDS(file="lm_res.rds")   
+pred <- predict(lm_res, test_data)
+round_pred <- round(pred)
+diff <- round_pred-test_data$r_stars
+plotter <- data.frame(diff)
+ggplot(plotter, aes(diff)) + geom_histogram(aes(y=..count../sum(..count..))) + xlab("Differens") + ylab(label="Distribution") + scale_x_continuous(breaks = round(seq(-3, 3, by = 1),1)) + theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=32, hjust=0.5)) + theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=22), axis.text= element_text(angle=0, vjust=0.5, size=16)) + ggtitle("Histogram")
 ```
-
-after
 
 Where should I eat tonight?
 ========================================================
@@ -60,7 +62,7 @@ user_join <- sqldf("select * from user, user_rank_mean where u_user_id=urm_user_
 
 lm_res <- readRDS(file="lm_res.rds")   
 ```
-```{r echo=FALSE}
+```{r fig.width=12, fig.height=6, echo=TRUE}
 lat <- 36.114647; lng <- -115.172813; max_dist <- 500
 user <- user_join[user_join$urm_user_id=="Kq8-FUG7d_MT2qRNiNBJnA",]
 res <- get_matching_companies(business, lat, lng, max_dist, user, lm_res)
