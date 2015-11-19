@@ -1,19 +1,19 @@
 Where should I eat tonight?
 ========================================================
 author: Fredrik Emilsson
-date: 2015-11-22
+date: 2015-11-19
 
 - I want to answer the following question: I am in a specific location and wants to know which restaurant within a specified distance I should visit for my dinner
 - To make this possible I first need to predict what a user thinks about a given restaurant. 
 - Yelp are delivering the data
 
-Understand which type of restaurant a user likes
+Understand which type of restaurants a user likes
 ========================================================
 
 - If a user gives a restaurant a higher star than the average user, he or she probably likes this kind of restaurants
 - Other similar restaurants with same types also probably get a higher star than average
 - A similar process is done when a user dislikes a restaurant
-- Use the categories and attributes to map user and restaurant  
+- Use the categories and attributes as types to map user and restaurant  
 - Will improve the prediction of review stars for restaurants
 
 Prediction model

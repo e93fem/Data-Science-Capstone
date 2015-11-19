@@ -1,7 +1,7 @@
 ---
 title: "Where should I eat tonight?"
 author: "Fredrik Emilsson"
-date: "Sunday, November 22, 2015"
+date: "Thursday, November 19, 2015"
 output: pdf_document
 ---
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
